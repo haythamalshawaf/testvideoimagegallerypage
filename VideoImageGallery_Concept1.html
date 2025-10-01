@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #e8e8e8 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="sports" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="30" fill="none" stroke="white" stroke-width="2" opacity="0.15"/><polygon points="100,20 120,60 80,60" fill="white" opacity="0.1"/><rect x="130" y="130" width="40" height="60" fill="none" stroke="white" stroke-width="2" opacity="0.12"/><circle cx="40" cy="150" r="8" fill="white" opacity="0.15"/><path d="M150,80 L170,100 L150,120 L130,100 Z" fill="white" opacity="0.1"/></pattern></defs><rect width="1200" height="600" fill="%23d5d5d5"/><rect width="1200" height="600" fill="url(%23sports)"/></svg>');
+            overflow: hidden;
+        }
+
+        /* Video Section */
+        #videoSection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #c9c9c9 0%, #e0e0e0 50%, #d2d2d2 100%);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            z-index: 100;
+        }
+
+        #videoSection::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(200, 200, 200, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #videoSection.hidden {
+            opacity: 0;
+            transform: scale(0.98);
+            pointer-events: none;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 180px;
+            background: linear-gradient(to top, 
+                rgba(200, 200, 200, 0.92) 0%,
+                rgba(220, 220, 220, 0.6) 50%,
+                transparent 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 50px;
+            justify-content: flex-end;
+            z-index: 3;
+        }
+
+        .gallery-btn {
+            background: linear-gradient(135deg, #505050 0%, #707070 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .gallery-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .gallery-btn:hover::before {
+            left: 100%;
+        }
+
+        .gallery-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(135deg, #606060 0%, #808080 100%);
+        }
+
+        /* Gallery Section */
+        #gallerySection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #c9c9c9 0%, #e0e0e0 50%, #d2d2d2 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        #gallerySection::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="sports" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="30" fill="none" stroke="white" stroke-width="2" opacity="0.12"/><polygon points="100,20 120,60 80,60" fill="white" opacity="0.08"/><rect x="130" y="130" width="40" height="60" fill="none" stroke="white" stroke-width="2" opacity="0.1"/><circle cx="40" cy="150" r="8" fill="white" opacity="0.12"/><path d="M150,80 L170,100 L150,120 L130,100 Z" fill="white" opacity="0.08"/><circle cx="180" cy="40" r="5" fill="white" opacity="0.15"/><polygon points="20,100 30,110 20,120 10,110" fill="white" opacity="0.1"/></pattern></defs><rect width="1200" height="600" fill="transparent"/><rect width="1200" height="600" fill="url(%23sports)"/></svg>');
+            pointer-events: none;
+        }
+
+        #gallerySection.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .gallery-header {
+            padding: 60px 50px 40px 50px;
+            background: linear-gradient(180deg, rgba(200, 200, 200, 0.7) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .gallery-header h1 {
+            color: #404040;
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .gallery-header p {
+            color: #606060;
+            font-size: 16px;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #505050;
+            border: 2px solid #505050;
+            padding: 14px 32px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .back-btn:hover {
+            background: #505050;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .gallery-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            height: calc(100vh - 250px);
+            position: relative;
+            z-index: 2;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        .coverflow-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-x;
+            cursor: grab;
+        }
+
+        .coverflow-container:active {
+            cursor: grabbing;
+        }
+
+        .gallery-item {
+            position: absolute;
+            width: 450px;
+            height: 320px;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-item.center {
+            z-index: 10;
+            transform: translateX(0) scale(1.15) rotateY(0deg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            pointer-events: auto;
+        }
+
+        .gallery-item.left-1 {
+            z-index: 9;
+            transform: translateX(-380px) scale(0.85) rotateY(45deg);
+            filter: brightness(0.7);
+            pointer-events: none;
+        }
+
+        .gallery-item.left-2 {
+            z-index: 8;
+            transform: translateX(-650px) scale(0.7) rotateY(55deg);
+            filter: brightness(0.5);
+            pointer-events: none;
+        }
+
+        .gallery-item.left-3 {
+            z-index: 7;
+            transform: translateX(-850px) scale(0.6) rotateY(65deg);
+            filter: brightness(0.3);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .gallery-item.right-1 {
+            z-index: 9;
+            transform: translateX(380px) scale(0.85) rotateY(-45deg);
+            filter: brightness(0.7);
+            pointer-events: none;
+        }
+
+        .gallery-item.right-2 {
+            z-index: 8;
+            transform: translateX(650px) scale(0.7) rotateY(-55deg);
+            filter: brightness(0.5);
+            pointer-events: none;
+        }
+
+        .gallery-item.right-3 {
+            z-index: 7;
+            transform: translateX(850px) scale(0.6) rotateY(-65deg);
+            filter: brightness(0.3);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .gallery-item.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 25px;
+            background: linear-gradient(to top, 
+                rgba(200, 200, 200, 0.95) 0%,
+                rgba(220, 220, 220, 0.7) 70%,
+                transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 2;
+        }
+
+        .gallery-item.center .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item-overlay h3 {
+            color: #404040;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-arrow {
+            display: none;
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(200, 200, 200, 0.97);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 200;
+        }
+
+        #lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            animation: lightboxZoom 0.5s ease;
+        }
+
+        @keyframes lightboxZoom {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3),
+                        0 0 80px rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            background: linear-gradient(135deg, #505050 0%, #707070 100%);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            font-weight: 300;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-lightbox:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Section -->
+    <div id="videoSection">
+        <video id="mainVideo" autoplay muted loop playsinline>
+            <source src="https://res.cloudinary.com/dkowiws4w/video/upload/v1759304227/%D8%AD%D9%8A%D8%A7%D9%83%D9%85_%D9%A1_f4cdw0.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay">
+            <button class="gallery-btn" onclick="showGallery()">عرض القائمة</button>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div id="gallerySection">
+        <div class="gallery-header">
+            <h1>القائمة</h1>
+            <p>استعرض قائمة الأخبار</p>
+            <button class="back-btn" onclick="showVideo()">العودة للشاشة الرئيسية</button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="coverflow-container" id="coverflowContainer">
+                <!-- Gallery items will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="close-lightbox" onclick="closeLightbox()">×</button>
+            <img id="lightboxImg" src="" alt="Lightbox Image">
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION: Replace these URLs with your hosted image URLs
+        const images = [
+            { src: 'https://imgur.com/nx1NyOI.jpg', title: 'صورة 1' },
+            { src: 'https://imgur.com/EYrFj61.jpg', title: 'صورة 2' },
+            { src: 'https://imgur.com/ClZLzBI.jpg', title: 'صورة 3' },
+            { src: 'https://imgur.com/bn4wv1vL_4.jpg', title: 'صورة 4' },
+            { src: 'https://imgur.com/DYlVH1V5.jpg', title: 'صورة 5' },
+            { src: 'YOUR_IMAGE_URL_6.jpg', title: 'Image Title 6' },
+            // Add more images as needed
+        ];
+
+        // Idle timer for gallery
+        let idleTimer = null;
+        const IDLE_TIME = 15000; // 15 seconds
+        let currentIndex = 0;
+        let galleryItems = [];
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let threshold = 80; // Minimum swipe distance
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            const gallerySection = document.getElementById('gallerySection');
+            const lightbox = document.getElementById('lightbox');
+            
+            // Start timer if gallery is active (whether main gallery or lightbox is open)
+            if (gallerySection.classList.contains('active')) {
+                idleTimer = setTimeout(() => {
+                    // Close lightbox if open, then return to video
+                    if (lightbox.classList.contains('active')) {
+                        lightbox.classList.remove('active');
+                    }
+                    showVideo();
+                }, IDLE_TIME);
+            }
+        }
+
+        // Track user activity
+        ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+            document.addEventListener(event, resetIdleTimer, true);
+        });
+
+        // Generate gallery items for coverflow
+        const coverflowContainer = document.getElementById('coverflowContainer');
+        images.forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <img src="${img.src}" alt="${img.title}">
+                <div class="gallery-item-overlay">
+                    <h3>${img.title}</h3>
+                </div>
+            `;
+            coverflowContainer.appendChild(item);
+            galleryItems.push(item);
+        });
+
+        // Touch and mouse event handlers
+        function handleStart(e) {
+            const gallerySection = document.getElementById('gallerySection');
+            const lightbox = document.getElementById('lightbox');
+            
+            if (!gallerySection.classList.contains('active') || lightbox.classList.contains('active')) return;
+            
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            currentX = startX;
+        }
+
+        function handleMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        }
+
+        function handleEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const diff = currentX - startX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    // Swiped right - go to previous
+                    navigateCoverflow(-1);
+                } else {
+                    // Swiped left - go to next
+                    navigateCoverflow(1);
+                }
+            } else if (Math.abs(diff) < 10) {
+                // It was a tap/click, open lightbox if center item
+                const centerItem = galleryItems[currentIndex];
+                if (centerItem.classList.contains('center')) {
+                    openLightbox(images[currentIndex].src);
+                }
+            }
+        }
+
+        // Add event listeners for touch and mouse
+        coverflowContainer.addEventListener('mousedown', handleStart);
+        coverflowContainer.addEventListener('mousemove', handleMove);
+        coverflowContainer.addEventListener('mouseup', handleEnd);
+        coverflowContainer.addEventListener('mouseleave', handleEnd);
+
+        coverflowContainer.addEventListener('touchstart', handleStart, { passive: true });
+        coverflowContainer.addEventListener('touchmove', handleMove, { passive: false });
+        coverflowContainer.addEventListener('touchend', handleEnd);
+
+        function updateCoverflow() {
+            galleryItems.forEach((item, index) => {
+                item.classList.remove('center', 'left-1', 'left-2', 'left-3', 'right-1', 'right-2', 'right-3', 'hidden');
+                
+                const offset = index - currentIndex;
+                
+                if (offset === 0) {
+                    item.classList.add('center');
+                } else if (offset === -1) {
+                    item.classList.add('left-1');
+                } else if (offset === -2) {
+                    item.classList.add('left-2');
+                } else if (offset <= -3) {
+                    item.classList.add('left-3');
+                } else if (offset === 1) {
+                    item.classList.add('right-1');
+                } else if (offset === 2) {
+                    item.classList.add('right-2');
+                } else if (offset >= 3) {
+                    item.classList.add('right-3');
+                }
+            });
+        }
+
+        function navigateCoverflow(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = galleryItems.length - 1;
+            if (currentIndex >= galleryItems.length) currentIndex = 0;
+            updateCoverflow();
+            resetIdleTimer();
+        }
+
+        // Initialize coverflow
+        updateCoverflow();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const gallerySection = document.getElementById('gallerySection');
+            const lightbox = document.getElementById('lightbox');
+            
+            if (gallerySection.classList.contains('active') && !lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    navigateCoverflow(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateCoverflow(1);
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    const centerItem = images[currentIndex];
+                    openLightbox(centerItem.src);
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        function showGallery() {
+            document.getElementById('videoSection').classList.add('hidden');
+            document.getElementById('gallerySection').classList.add('active');
+            document.getElementById('mainVideo').pause();
+            resetIdleTimer(); // Start idle timer when gallery opens
+        }
+
+        function showVideo() {
+            clearTimeout(idleTimer); // Clear idle timer when returning to video
+            document.getElementById('gallerySection').classList.remove('active');
+            document.getElementById('videoSection').classList.remove('hidden');
+            document.getElementById('mainVideo').play();
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('active');
+            resetIdleTimer(); // Reset timer when opening lightbox
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            resetIdleTimer(); // Reset timer when closing lightbox
+        }
+
+
+    </script>
+</body>
+</html>
